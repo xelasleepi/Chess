@@ -1,0 +1,16 @@
+-- Option A: Disable existing Idle connections (Cleaner method)
+if getconnections then
+    for _, connection in pairs(getconnections(game.Players.LocalPlayer.Idled)) do
+        if connection["Disable"] then
+            connection["Disable"](connection)
+        elseif connection["Disconnect"] then
+            connection["Disconnect"](connection)
+        end
+    end
+else
+    -- Option B: Force input simulation when the Idled event fires
+    game.Players.LocalPlayer.Idled:Connect(function()
+        game:GetService("VirtualUser"):CaptureController()
+        game:GetService("VirtualUser"):ClickButton2(Vector2.new())
+    end)
+end
