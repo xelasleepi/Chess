@@ -1,0 +1,59 @@
+repeat task.wait() until game:IsLoaded(); task.wait(10); game:GetService("ReplicatedStorage").Remotes.Upboard:FireServer("ChangeGameSpeed", 2); game:GetService("ReplicatedStorage").Remotes.Upboard:FireServer("ChangeGameSpeed", 2)
+local UserInputService = game:GetService("UserInputService")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+
+local livesFolder = workspace:WaitForChild("Lives")
+local remote = ReplicatedStorage.Remotes.Champion
+local ohString1 = "Awaken"
+
+local enabled = false -- toggle state
+
+-- toggle key (change if you want)
+local TOGGLE_KEY = Enum.KeyCode.F1
+
+print("toggle f1 to rape")
+UserInputService.InputBegan:Connect(function(input, gp)
+	if gp then return end
+	if input.KeyCode == TOGGLE_KEY then
+		enabled = not enabled
+		print("Awaken Toggle:", enabled and "ON" or "OFF")
+	end
+end)
+
+task.spawn(function()
+	while true do
+		if enabled then
+			for _, model in ipairs(livesFolder:GetChildren()) do
+				if not enabled then break end
+				if model:IsA("Model") then
+					remote:FireServer(ohString1, model)
+					task.wait(0.1)
+				end
+			end
+		end
+		task.wait(0.5)
+	end
+end)
+
+local name = game.Players.LocalPlayer.Name
+
+if name == "wavefarmer1" or name == "wavefarmer3" or name == "wavefarmer6" then
+	print("alt script")
+	loadstring(game:HttpGet("https://raw.githubusercontent.com/xelasleepi/Chess/refs/heads/main/ANTIAFK.lua"))()
+	loadstring(game:HttpGet("https://raw.githubusercontent.com/xelasleepi/Chess/refs/heads/main/jollyalts"))()
+	loadstring(game:HttpGet("https://raw.githubusercontent.com/xelasleepi/Chess/refs/heads/main/Pick%20up%20gifts"))()
+	loadstring(game:HttpGet("https://raw.githubusercontent.com/xelasleepi/Chess/refs/heads/main/roantiafk"))()
+	setfpscap(20)
+	game:GetService("RunService"):Set3dRenderingEnabled(false)
+	game:GetService("ReplicatedStorage").Remotes.Upboard:FireServer("ChangeGameSpeed", 2)
+
+elseif name == "Tapwat110r" or name == "TesterB" then
+	print("main")
+	loadstring(game:HttpGet("https://raw.githubusercontent.com/xelasleepi/Chess/refs/heads/main/ANTIAFK.lua"))()
+	loadstring(game:HttpGet("https://raw.githubusercontent.com/xelasleepi/Chess/refs/heads/main/autochess.lua"))()
+	loadstring(game:HttpGet("https://raw.githubusercontent.com/xelasleepi/Chess/refs/heads/main/Pick%20up%20gifts"))()
+	loadstring(game:HttpGet("https://raw.githubusercontent.com/xelasleepi/Chess/refs/heads/main/roantiafk"))()
+
+else
+	print("not in auto")
+end
