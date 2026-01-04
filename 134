@@ -1,0 +1,125 @@
+local p = game:GetService("Players")
+local ts = game:GetService("TweenService")
+
+local lp = p.LocalPlayer
+local crcter = lp.Character or lp.CharacterAdded:Wait()
+local hrp = crcter:WaitForChild("HumanoidRootPart")
+
+local on = true -- ALWAYS ON
+local moving = false
+local got = {}
+
+local function goTo(model)
+	if not model or moving then return end
+	moving = true
+
+	local spot
+	if model.PrimaryPart then
+		spot = model.PrimaryPart.Position + Vector3.new(0, 5, 0)
+	else
+		local sum = Vector3.new()
+		local num = 0
+		for _, thing in ipairs(model:GetChildren()) do
+			if thing:IsA("BasePart") then
+				sum += thing.Position
+				num += 1
+			end
+		end
+		if num > 0 then
+			spot = (sum / num) + Vector3.new(0, 5, 0)
+		else
+			moving = false
+			return
+		end
+	end
+
+	local tween = ts:Create(hrp, TweenInfo.new(0.5), {
+		CFrame = CFrame.new(spot)
+	})
+	tween:Play()
+	tween.Completed:Wait()
+	task.wait(0.5)
+	moving = false
+end
+
+local function makeClaim(model)
+	if got[model] then return end
+
+	local touchPart = Instance.new("Part")
+	touchPart.Size = Vector3.new(10, 10, 10)
+	touchPart.Transparency = 1
+	touchPart.CanCollide = false
+	touchPart.Anchored = true
+
+	if model.PrimaryPart then
+		touchPart.CFrame = model.PrimaryPart.CFrame
+	else
+		local sum = Vector3.new()
+		local num = 0
+		for _, thing in ipairs(model:GetChildren()) do
+			if thing:IsA("BasePart") then
+				sum += thing.Position
+				num += 1
+			end
+		end
+		if num > 0 then
+			touchPart.Position = sum / num
+		end
+	end
+
+	touchPart.Parent = model
+
+	touchPart.Touched:Connect(function(hit)
+		if hit == hrp and not got[model] then
+			got[model] = true
+
+			local glow = Instance.new("Highlight")
+			glow.FillColor = Color3.fromRGB(0, 255, 0)
+			glow.OutlineColor = Color3.fromRGB(0, 200, 0)
+			glow.FillTransparency = 0.5
+			glow.Parent = model
+
+			touchPart:Destroy()
+		end
+	end)
+end
+
+local function findModels()
+	local targets = {}
+
+	local candy = workspace:FindFirstChild("Candy")
+	if candy and candy:IsA("Model") and not got[candy] then
+		table.insert(targets, candy)
+	end
+
+	local gift = workspace:FindFirstChild("Gift")
+	if gift and gift:IsA("Model") and not got[gift] then
+		table.insert(targets, gift)
+	end
+
+	return targets
+end
+
+local function loop()
+	while on do
+		for _, model in ipairs(findModels()) do
+			if not got[model] then
+				makeClaim(model)
+				goTo(model)
+			end
+			task.wait(0.1)
+		end
+		task.wait(1)
+	end
+end
+
+-- START AUTOMATICALLY
+task.spawn(loop)
+
+-- HANDLE RESPAWN
+lp.CharacterAdded:Connect(function(newChar)
+	crcter = newChar
+	hrp = crcter:WaitForChild("HumanoidRootPart")
+end)
+
+print("always on")
